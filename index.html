@@ -1,0 +1,1038 @@
+
+
+The museum of buggu · HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Museum of Buggu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=DM+Sans:wght@400;500;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f5ecdd;
+    --paper:#fbf5e9;
+    --charcoal:#231f1a;
+    --teal:#1f4a42;
+    --teal-dark:#0f2c28;
+    --navy:#101a2b;
+    --navy-deep:#070c16;
+    --amber:#e19a3c;
+    --brass:#c8992f;
+    --rose:#cf6274;
+    --rose-soft:#e79aa6;
+    --line: rgba(35,31,26,0.14);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--charcoal);
+    font-family:'DM Sans', sans-serif;
+    overflow-x:hidden;
+  }
+  h1,h2,h3, .display{ font-family:'Fraunces', serif; margin:0; }
+  .hand{ font-family:'Caveat', cursive; }
+ 
+  /* ---------- AMBIENT LAYER ---------- */
+  #ambientCanvas{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:5;
+    mix-blend-mode:screen;
+  }
+  .thread-rail{
+    position:fixed;
+    left:14px;
+    top:0;
+    bottom:0;
+    width:3px;
+    background:rgba(35,31,26,0.1);
+    z-index:6;
+    border-radius:3px;
+  }
+  .thread-fill{
+    position:absolute;
+    left:0; top:0;
+    width:100%;
+    height:0%;
+    background:linear-gradient(180deg, var(--rose), var(--amber));
+    border-radius:3px;
+    transition:height .08s linear;
+  }
+  .thread-charm{
+    position:absolute;
+    left:50%;
+    top:0%;
+    transform:translate(-50%,-50%);
+    font-size:13px;
+    transition:top .08s linear;
+  }
+  @media (max-width:520px){ .thread-rail{ left:8px; } }
+ 
+  .museum{ position:relative; z-index:2; }
+  .room{
+    min-height:100vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    padding:70px 24px 44px;
+    text-align:center;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--rose);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .room-title{ font-size:clamp(24px,6.4vw,34px); font-weight:700; line-height:1.15; }
+  .room-sub{ max-width:320px; margin-top:9px; opacity:0.72; font-size:14px; }
+  .scrolldown{
+    position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+    font-size:11px; letter-spacing:.08em; color:rgba(35,31,26,0.4);
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+  }
+  .scrolldown.on-dark{ color:rgba(245,236,221,0.55); }
+  .scrolldown svg{ animation:bob 1.8s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+ 
+  /* ---------- ROOM 0 : DOOR ---------- */
+  .room-door{
+    background:radial-gradient(120% 90% at 50% 0%, #2d5c53 0%, var(--teal) 45%, var(--teal-dark) 100%);
+    color:var(--paper);
+  }
+  .door-tag{
+    display:inline-block; background:rgba(245,236,221,0.12);
+    border:1px solid rgba(245,236,221,0.35); padding:6px 14px; border-radius:999px;
+    font-size:12px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:18px;
+  }
+  .door-headline{ font-size:clamp(28px,7.4vw,44px); font-weight:700; line-height:1.14; max-width:520px; }
+  .door-headline .accent{ color:var(--amber); font-style:italic; }
+  .door-sub{ margin-top:10px; font-size:15px; opacity:0.8; max-width:360px; }
+  .door-wrap{ margin-top:36px; position:relative; width:min(70vw, 250px); perspective:1000px; }
+  .door-shape{
+    width:100%; aspect-ratio:3/4.3;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 3px, transparent 3px 26px),
+      linear-gradient(160deg,#2b6157,#173c36 70%);
+    border-radius:130px 130px 14px 14px;
+    box-shadow: inset 0 0 0 3px rgba(245,236,221,0.15), 0 30px 60px rgba(0,0,0,0.4);
+    position:relative; transform-origin:left center;
+    transition:transform 1.1s cubic-bezier(.7,0,.2,1), box-shadow 1.1s ease;
+  }
+  .door-shape.open{
+    transform: rotateY(-70deg);
+    box-shadow: inset 0 0 0 3px rgba(245,236,221,0.15), -30px 30px 60px rgba(0,0,0,0.5);
+  }
+  .door-glow{
+    position:absolute; inset:6px; border-radius:120px 120px 10px 10px;
+    background:radial-gradient(circle at 50% 40%, rgba(255,220,150,0.55), transparent 70%);
+    opacity:0; transition:opacity 1s ease;
+  }
+  .door-shape.open .door-glow{ opacity:1; }
+  .door-plaque{
+    position:absolute; top:20%; left:50%; transform:translateX(-50%);
+    background:var(--paper); color:var(--charcoal); padding:10px 14px; border-radius:4px;
+    font-size:11.5px; line-height:1.35; box-shadow:0 8px 16px rgba(0,0,0,0.25); width:74%;
+  }
+  .door-plaque b{ display:block; font-family:'Fraunces',serif; font-size:14px; }
+  .ring-btn{
+    position:absolute; top:54%; left:50%; transform:translate(-50%,-50%);
+    width:56px; height:56px; border-radius:50%; border:7px solid var(--brass);
+    background:radial-gradient(circle at 35% 30%, #f1c877, var(--brass) 60%);
+    cursor:pointer; animation:pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(200,153,47,0.5); }
+    70%{ box-shadow:0 0 0 16px rgba(200,153,47,0); }
+    100%{ box-shadow:0 0 0 0 rgba(200,153,47,0); }
+  }
+  .door-hint{ margin-top:16px; font-size:13px; opacity:0.7; min-height:18px; }
+  .enter-cta{
+    margin-top:24px; display:none; background:var(--amber); color:var(--teal-dark);
+    border:none; padding:13px 28px; border-radius:999px; font-weight:700; font-size:14px;
+    cursor:pointer; letter-spacing:.02em; font-family:'DM Sans',sans-serif;
+  }
+  .enter-cta.show{ display:inline-block; animation:fadeUp .6s ease both; }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
+ 
+  /* ---------- ROOM 1 : BAND ---------- */
+  .room-band{ background:var(--paper); }
+  .band-wrap{ width:min(78vw,290px); margin:30px auto; }
+  .band-svg{ width:100%; height:auto; }
+  .band-path{ stroke-dasharray:900; stroke-dashoffset:900; transition:stroke-dashoffset 1.4s ease; }
+  .band-wrap.tied .band-path{ stroke-dashoffset:0; }
+  .tie-btn{
+    margin-top:6px; background:var(--teal); color:var(--paper); border:none;
+    padding:14px 32px; border-radius:999px; font-weight:700; font-size:14px;
+    cursor:pointer; box-shadow:0 10px 24px rgba(31,74,66,0.25);
+  }
+  .tie-btn.done{ background:var(--rose); }
+  .tied-msg{ margin-top:14px; font-size:14px; color:var(--teal); opacity:0; transition:opacity .5s ease; max-width:300px; }
+  .tied-msg.show{ opacity:1; }
+ 
+  /* ---------- ROOM 2 : LEDGER / TIMELINE ---------- */
+  .room-ledger{ background:linear-gradient(180deg,var(--paper),#f2e6d2); }
+  .ledger-track{
+    display:flex; gap:14px; overflow-x:auto; width:100%; max-width:520px;
+    padding:26px 18px 10px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  }
+  .ledger-track::-webkit-scrollbar{ height:5px; }
+  .ledger-track::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
+  .ledger-card{
+    flex:0 0 168px; height:210px; scroll-snap-align:center;
+    border-radius:10px; cursor:pointer; position:relative;
+    perspective:800px;
+  }
+  .ledger-inner{
+    position:relative; width:100%; height:100%; transition:transform .6s cubic-bezier(.7,0,.3,1);
+    transform-style:preserve-3d;
+  }
+  .ledger-card.flipped .ledger-inner{ transform:rotateY(180deg); }
+  .ledger-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:10px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:14px; box-shadow:0 12px 22px rgba(35,31,26,0.15);
+  }
+  .ledger-front{ background:var(--teal); color:var(--paper); }
+  .ledger-front .lc-date{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:0.75; }
+  .ledger-front .lc-label{ font-family:'Fraunces',serif; font-size:19px; font-weight:700; margin-top:8px; }
+  .ledger-front .lc-tap{ margin-top:14px; font-size:11px; opacity:0.6; }
+  .ledger-back{ background:var(--paper); color:var(--charcoal); transform:rotateY(180deg); border:2px solid var(--rose); }
+  .ledger-back p{ font-family:'Caveat',cursive; font-size:18px; line-height:1.35; margin:0; }
+  .ledger-hint{ margin-top:12px; font-size:12.5px; opacity:0.6; }
+ 
+  /* ---------- ROOM 3 : GALLERY ---------- */
+  .room-gallery{ background:linear-gradient(180deg,#f2e6d2,var(--cream)); }
+  .gallery-frame{ width:min(76vw,270px); position:relative; }
+  .card-track{
+    position:relative; width:100%; aspect-ratio:1/1; border:10px solid var(--brass);
+    border-radius:6px; background:var(--paper); box-shadow:0 18px 34px rgba(35,31,26,0.18); overflow:hidden;
+  }
+  .scratch-card{ position:absolute; inset:0; display:none; }
+  .scratch-card.active{ display:block; }
+  .photo-art{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:16px; }
+  .photo-art .cap{ font-family:'Caveat',cursive; font-size:21px; color:var(--charcoal); margin-top:10px; }
+  canvas.scratch-canvas{ position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:grab; }
+  .gallery-controls{ display:flex; align-items:center; justify-content:center; gap:16px; margin-top:18px; }
+  .arrow-btn{
+    width:36px; height:36px; border-radius:50%; border:none; background:var(--rose); color:#fff;
+    font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .dots{ display:flex; gap:7px; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); }
+  .dot.active{ background:var(--rose); }
+  .gallery-hint{ margin-top:12px; font-size:12.5px; opacity:0.6; }
+  .exhibit-label{ margin-top:12px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--rose); font-weight:700; }
+ 
+  /* ---------- ROOM 4 : PUZZLE ---------- */
+  .room-puzzle{ background:var(--cream); }
+  .puzzle-grid{
+    width:min(68vw,250px); aspect-ratio:1/1; display:grid; grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr); gap:3px; background:var(--charcoal); border-radius:6px;
+    overflow:hidden; box-shadow:0 18px 34px rgba(35,31,26,0.18);
+  }
+  .tile{ background-size:270px 270px; cursor:pointer; transition:filter .2s ease; }
+  .tile.selected{ filter:brightness(0.7); outline:2px solid var(--amber); outline-offset:-2px; }
+  .puzzle-meta{ margin-top:12px; font-size:12.5px; opacity:0.65; }
+  .puzzle-win{ margin-top:12px; font-family:'Caveat',cursive; font-size:23px; color:var(--rose); opacity:0; transition:opacity .6s ease; }
+  .puzzle-win.show{ opacity:1; }
+ 
+  /* ---------- ROOM 5 : NIGHT SKY / CONSTELLATION ---------- */
+  .room-sky{
+    background:radial-gradient(120% 100% at 50% 20%, #16233b 0%, var(--navy) 55%, var(--navy-deep) 100%);
+    color:var(--paper); overflow:hidden;
+  }
+  .room-sky .eyebrow{ color:var(--amber); }
+  .sky-field{
+    position:relative; width:min(88vw,360px); height:320px; margin-top:26px;
+  }
+  .sparkle{
+    position:absolute; width:2px; height:2px; background:rgba(255,255,255,0.6); border-radius:50%;
+  }
+  .star-node{
+    position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px;
+    border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff7dc, var(--amber) 70%);
+    cursor:pointer; box-shadow:0 0 14px rgba(225,154,60,0.7);
+    display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--navy-deep);
+    transition:transform .3s ease;
+  }
+  .star-node.opened{ background:radial-gradient(circle at 35% 30%, #ffe3ea, var(--rose) 70%); transform:scale(1.08); }
+  .reason-pop{
+    position:absolute; bottom:-4px; left:50%; transform:translate(-50%,0); width:180px;
+    background:var(--paper); color:var(--charcoal); border-radius:8px; padding:10px 12px;
+    font-family:'Caveat',cursive; font-size:16px; line-height:1.3; box-shadow:0 10px 22px rgba(0,0,0,0.4);
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+    z-index:3;
+  }
+  .reason-pop.show{ opacity:1; transform:translate(-50%,10px); }
+  .sky-progress{ margin-top:18px; font-size:12.5px; opacity:0.6; }
+ 
+  /* ---------- ROOM 6 : THE VOWS (promises + signature + certificate) ---------- */
+  .room-vows{ background:linear-gradient(180deg,var(--navy-deep),#241a22 60%, var(--cream) 100%); color:var(--paper); }
+  .room-vows .eyebrow{ color:var(--amber); }
+  .vow-card{
+    background:var(--paper); color:var(--charcoal); width:min(86vw,340px);
+    border-radius:8px; padding:22px 20px; box-shadow:0 20px 44px rgba(0,0,0,0.4); margin-top:22px;
+  }
+  .vow-card h3{ font-family:'Fraunces',serif; font-size:18px; font-weight:700; text-align:center; }
+  .vow-sub{ text-align:center; font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:0.55; margin-top:2px; margin-bottom:16px; }
+  .vow-list{ display:flex; flex-direction:column; gap:10px; text-align:left; }
+  .vow-item{ display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:14px; line-height:1.35; }
+  .vow-check{
+    flex:0 0 20px; width:20px; height:20px; border-radius:5px; border:2px solid var(--teal);
+    display:flex; align-items:center; justify-content:center; font-size:12px; color:transparent;
+    margin-top:1px; transition:background .2s ease, color .2s ease;
+  }
+  .vow-item.checked .vow-check{ background:var(--teal); color:var(--paper); }
+  .vow-item.checked span.vt{ text-decoration:line-through; opacity:0.55; }
+  .vow-progress{ text-align:center; margin-top:14px; font-size:12px; opacity:0.6; }
+ 
+  .sign-zone{ margin-top:18px; opacity:0.35; pointer-events:none; transition:opacity .4s ease; }
+  .sign-zone.active{ opacity:1; pointer-events:auto; }
+  .sign-label{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; opacity:0.55; margin-bottom:6px; text-align:left; }
+  .sign-pad-wrap{ position:relative; border:1.5px dashed var(--line); border-radius:6px; background:#fffdf7; }
+  canvas.sign-pad{ width:100%; height:110px; display:block; touch-action:none; cursor:crosshair; }
+  .sign-placeholder{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Caveat',cursive; font-size:20px; color:rgba(35,31,26,0.3); pointer-events:none;
+  }
+  .sign-row{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .sign-clear{ background:none; border:none; font-size:11.5px; text-decoration:underline; color:var(--rose); cursor:pointer; padding:4px; }
+  .seal-btn{
+    margin-top:16px; width:100%; background:var(--rose); color:#fff; border:none; padding:13px;
+    border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; letter-spacing:.02em;
+  }
+  .seal-btn:disabled{ background:#d9cfc0; color:#9c9284; cursor:not-allowed; }
+  .kiss-btn{
+    margin-top:10px; width:100%; background:none; border:1.5px solid var(--rose); color:var(--rose);
+    padding:11px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; display:none;
+  }
+  .kiss-btn.show{ display:block; animation:fadeUp .5s ease both; }
+ 
+  .certificate{
+    width:min(86vw,340px); margin-top:26px; background:var(--paper); color:var(--charcoal);
+    border-radius:6px; padding:4px; box-shadow:0 24px 50px rgba(0,0,0,0.45);
+    opacity:0; transform:translateY(16px) scale(0.97); max-height:0; overflow:hidden;
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .certificate.show{ opacity:1; transform:translateY(0) scale(1); max-height:900px; margin-bottom:8px; }
+  .cert-inner{ border:2px solid var(--brass); border-radius:4px; padding:22px 18px; position:relative; }
+  .cert-inner::before, .cert-inner::after{
+    content:''; position:absolute; width:16px; height:16px; border:2px solid var(--brass);
+  }
+  .cert-inner::before{ top:6px; left:6px; border-right:none; border-bottom:none; }
+  .cert-inner::after{ bottom:6px; right:6px; border-left:none; border-top:none; }
+  .cert-eyebrow{ text-align:center; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--rose); font-weight:700; }
+  .cert-title{ text-align:center; font-family:'Fraunces',serif; font-size:22px; font-weight:700; margin-top:6px; }
+  .cert-body{ text-align:center; font-size:13px; line-height:1.6; margin-top:12px; opacity:0.85; }
+  .cert-names{ text-align:center; font-family:'Caveat',cursive; font-size:26px; color:var(--teal); margin-top:10px; }
+  .cert-sig-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:22px; gap:10px; }
+  .cert-sig-box{ flex:1; text-align:center; }
+  .cert-sig-box img{ max-height:46px; max-width:100%; }
+  .cert-sig-line{ border-top:1px solid var(--charcoal); margin-top:4px; padding-top:4px; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; opacity:0.55; }
+  .cert-seal{
+    width:52px; height:52px; border-radius:50%; margin:0 auto;
+    background:radial-gradient(circle at 35% 30%, #f1c877, var(--brass) 70%);
+    display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--teal-dark);
+    box-shadow:0 4px 10px rgba(0,0,0,0.25); position:relative;
+  }
+  .cert-date{ text-align:center; font-size:10.5px; opacity:0.5; margin-top:14px; }
+  .cert-stamp{
+    position:absolute; top:14px; right:10px; border:2.5px solid var(--rose); color:var(--rose);
+    border-radius:50%; width:64px; height:64px; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:10.5px; text-transform:uppercase;
+    transform:rotate(14deg) scale(0); text-align:center; line-height:1.1; letter-spacing:.02em;
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cert-stamp.show{ transform:rotate(14deg) scale(1); }
+  .cert-kiss{
+    position:absolute; font-size:26px; opacity:0; transition:opacity .4s ease;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+  }
+  .cert-kiss.show{ opacity:1; }
+ 
+  /* ---------- ROOM 7 : GIFT / LETTER ---------- */
+  .room-gift{
+    background:radial-gradient(120% 90% at 50% 100%, #2d5c53 0%, var(--teal) 45%, var(--teal-dark) 100%);
+    color:var(--paper);
+  }
+  .giftbox{
+    width:150px; height:120px; margin:30px auto 6px; position:relative; cursor:pointer;
+    perspective:600px;
+  }
+  .gb-base{
+    position:absolute; bottom:0; left:0; right:0; height:78px;
+    background:linear-gradient(135deg, var(--rose), #b84a5c);
+    border-radius:6px; box-shadow:0 20px 40px rgba(0,0,0,0.35);
+  }
+  .gb-lid{
+    position:absolute; top:14px; left:-6px; right:-6px; height:34px;
+    background:linear-gradient(135deg, #e07f92, var(--rose));
+    border-radius:6px; transform-origin:top center; transition:transform .8s cubic-bezier(.7,0,.2,1);
+    box-shadow:0 8px 14px rgba(0,0,0,0.25);
+  }
+  .giftbox.open .gb-lid{ transform:rotateX(-115deg) translateY(-4px); }
+  .gb-ribbon-v{ position:absolute; top:0; bottom:0; left:50%; width:14px; margin-left:-7px; background:var(--amber); }
+  .gb-ribbon-h{ position:absolute; top:14px; left:0; right:0; height:14px; background:var(--amber); }
+  .gb-bow{ position:absolute; top:-2px; left:50%; transform:translateX(-50%); font-size:24px; }
+  .gift-hint{ margin-top:10px; font-size:13px; opacity:0.75; }
+  .letter{
+    background:var(--paper); color:var(--charcoal); width:min(84vw,340px); padding:28px 22px;
+    border-radius:4px; box-shadow:0 20px 50px rgba(0,0,0,0.35); text-align:left; transform:rotate(-1deg);
+    margin-top:22px; opacity:0; max-height:0; overflow:hidden; transition:opacity .8s ease;
+  }
+  .letter.show{ opacity:1; max-height:800px; }
+  .letter p{ font-family:'Caveat',cursive; font-size:21px; line-height:1.5; margin:0 0 12px; }
+  .letter .sign{ font-family:'Caveat',cursive; font-size:25px; color:var(--rose); text-align:right; margin-top:8px; }
+  .heart{ color:var(--rose); }
+  .final-tag{ margin-top:26px; font-size:12px; opacity:0.55; letter-spacing:.08em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+ 
+<canvas id="ambientCanvas"></canvas>
+<div class="thread-rail"><div class="thread-fill" id="threadFill"></div><div class="thread-charm" id="threadCharm">❤</div></div>
+ 
+<div class="museum" id="museum">
+ 
+  <!-- ROOM 0: DOOR -->
+  <section class="room room-door" id="door-room">
+    <span class="door-tag">✦ Just Because</span>
+    <h1 class="door-headline">Kittu built you a <span class="accent">museum</span>.</h1>
+    <p class="door-sub">For every birthday I missed and every "just because" I never sent. Knock three times. That's the rule.</p>
+    <div class="door-wrap">
+      <div class="door-shape" id="doorShape">
+        <div class="door-glow"></div>
+        <div class="door-plaque"><b>The Museum of Buggu</b>one visitor only</div>
+        <div class="ring-btn" id="ringBtn"></div>
+      </div>
+    </div>
+    <div class="door-hint" id="doorHint">Tap the brass ring →</div>
+    <button class="enter-cta" id="enterBtn">Step inside</button>
+    <div class="scrolldown on-dark" id="scrollHint0" style="display:none;"><span>scroll</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 14l6 6 6-6"/></svg>
+    </div>
+  </section>
+ 
+  <!-- ROOM 1: BAND -->
+  <section class="room room-band" id="band-room">
+    <div class="eyebrow">Room 1 · The Entrance</div>
+    <h2 class="room-title">First, our love band.</h2>
+    <p class="room-sub">Woven from every year I promised you the world. Tap to tie it on.</p>
+    <div class="band-wrap" id="bandWrap">
+      <svg class="band-svg" viewBox="0 0 300 120">
+        <path class="band-path" d="M10,60 C60,10 90,110 150,60 C210,10 240,110 290,60" stroke="#cf6274" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path class="band-path" d="M10,60 C60,110 90,10 150,60 C210,110 240,10 290,60" stroke="#e19a3c" stroke-width="7" fill="none" stroke-linecap="round" style="transition-delay:.15s;"/>
+        <path class="band-path" d="M10,60 C70,30 110,90 150,60 C190,30 230,90 290,60" stroke="#1f4a42" stroke-width="4" fill="none" stroke-linecap="round" style="transition-delay:.3s;"/>
+      </svg>
+    </div>
+    <button class="tie-btn" id="tieBtn">Tie it on</button>
+    <p class="tied-msg" id="tiedMsg">Tied. Yours to keep — no take-backs, not even on the birthdays I missed.</p>
+  </section>
+ 
+  <!-- ROOM 2: LEDGER / TIMELINE -->
+  <section class="room room-ledger" id="ledger-room">
+    <div class="eyebrow">Room 2 · The Ledger</div>
+    <h2 class="room-title">Every day I <span style="color:var(--rose); font-style:italic;">owed</span> you.</h2>
+    <p class="room-sub">Flip each card. Consider the debt finally settled.</p>
+    <div class="ledger-track" id="ledgerTrack"></div>
+    <div class="ledger-hint">← swipe · tap a card to flip →</div>
+  </section>
+ 
+  <!-- ROOM 3: GALLERY -->
+  <section class="room room-gallery" id="gallery-room">
+    <div class="eyebrow">Room 3 · The Gallery</div>
+    <h2 class="room-title">Our <span style="color:var(--rose); font-style:italic;">photos</span>.</h2>
+    <p class="room-sub">Each one is covered. Rub your finger across to see it.</p>
+    <div class="gallery-frame"><div class="card-track" id="cardTrack"></div></div>
+    <div class="gallery-controls">
+      <button class="arrow-btn" id="prevCard">‹</button>
+      <div class="dots" id="dots"></div>
+      <button class="arrow-btn" id="nextCard">›</button>
+    </div>
+    <div class="exhibit-label" id="exhibitLabel">Exhibit 1 · From the Kittu Collection</div>
+    <div class="gallery-hint">Scratch to reveal ✦</div>
+  </section>
+ 
+  <!-- ROOM 4: PUZZLE -->
+  <section class="room room-puzzle" id="puzzle-room">
+    <div class="eyebrow">Room 4 · The Restoration Desk</div>
+    <h2 class="room-title">This photo fell <span style="color:var(--amber); font-style:italic;">apart</span>.</h2>
+    <p class="room-sub">Put the pieces back in order. Tap two tiles to swap them.</p>
+    <div class="puzzle-grid" id="puzzleGrid"></div>
+    <div class="puzzle-meta" id="moveCount">Moves: 0</div>
+    <div class="puzzle-win" id="puzzleWin">Fixed. Just like us. ✓</div>
+  </section>
+ 
+  <!-- ROOM 5: NIGHT SKY -->
+  <section class="room room-sky" id="sky-room">
+    <div class="eyebrow">Room 5 · The Night Sky</div>
+    <h2 class="room-title">Six reasons, out of hundreds.</h2>
+    <p class="room-sub" style="opacity:0.65;">Tap each star.</p>
+    <div class="sky-field" id="skyField"></div>
+    <div class="sky-progress" id="skyProgress">0 / 6 stars opened</div>
+  </section>
+ 
+  <!-- ROOM 6: THE VOWS -->
+  <section class="room room-vows" id="vows-room">
+    <div class="eyebrow">Room 6 · The Vows</div>
+    <h2 class="room-title">Sign here, make it official.</h2>
+    <p class="room-sub" style="opacity:0.6;">Tick every promise, then sign below your name.</p>
+ 
+    <div class="vow-card">
+      <h3>Our Love Rules</h3>
+      <div class="vow-sub">Between Kittu &amp; Buggu</div>
+      <div class="vow-list" id="vowList"></div>
+      <div class="vow-progress" id="vowProgress">0 / 5 promises kept</div>
+ 
+      <div class="sign-zone" id="signZone">
+        <div class="sign-label">Sign here with your finger, Buggu</div>
+        <div class="sign-pad-wrap">
+          <canvas class="sign-pad" id="signPad"></canvas>
+          <div class="sign-placeholder" id="signPlaceholder">sign here</div>
+        </div>
+        <div class="sign-row">
+          <button class="sign-clear" id="signClear">clear</button>
+          <span style="font-size:11px; opacity:0.5;">renewed today ✦</span>
+        </div>
+        <button class="seal-btn" id="sealBtn" disabled>Seal it</button>
+        <button class="kiss-btn" id="kissBtn">Add a kiss 💋</button>
+      </div>
+    </div>
+ 
+    <div class="certificate" id="certificate">
+      <div class="cert-inner">
+        <div class="cert-stamp" id="certStamp">Renewed<br>✓</div>
+        <div class="cert-eyebrow">Certificate of Love</div>
+        <div class="cert-title">Issued by the God of Love</div>
+        <div class="cert-body">This certifies that the two people named below are held safe, chosen daily, and loved without condition for every day of this journey together.</div>
+        <div class="cert-names">Kittu &amp; Buggu</div>
+        <div class="cert-sig-row">
+          <div class="cert-sig-box">
+            <div class="hand" style="font-size:22px;">Kittu</div>
+            <div class="cert-sig-line">Kittu</div>
+          </div>
+          <div class="cert-seal">❤</div>
+          <div class="cert-sig-box">
+            <img id="certSigImg" src="" alt="">
+            <div class="cert-sig-line">Buggu</div>
+          </div>
+        </div>
+        <div class="cert-date" id="certDate"></div>
+        <div class="cert-kiss" id="certKiss">💋</div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ROOM 7: GIFT + LETTER -->
+  <section class="room room-gift" id="gift-room">
+    <div class="eyebrow" style="color:var(--amber);">Room 7 · The Vault</div>
+    <h2 class="room-title">One last thing.</h2>
+    <div class="giftbox" id="giftBox">
+      <div class="gb-lid"><div class="gb-ribbon-h"></div></div>
+      <div class="gb-base"><div class="gb-ribbon-v"></div></div>
+      <div class="gb-bow">🎀</div>
+    </div>
+    <div class="gift-hint" id="giftHint">Tap the box to open it</div>
+    <div class="letter" id="letter">
+      <p>I couldn't hand you a wrapped box on your birthday, or on all the days after it that deserved one too. So I built you this instead — a whole museum, just for you, with a door that only opens for Buggu.</p>
+      <p>Every room in here is something I didn't say enough. Consider this the first of many gifts I still owe you. <span class="heart">♥</span></p>
+      <div class="sign">— Kittu</div>
+    </div>
+    <div class="final-tag">the thread ends here, we don't</div>
+  </section>
+ 
+</div>
+ 
+<script>
+/* ================= AMBIENT PARTICLES ================= */
+const ac = document.getElementById('ambientCanvas');
+const actx = ac.getContext('2d');
+function resizeAmbient(){ ac.width = window.innerWidth; ac.height = window.innerHeight; }
+resizeAmbient();
+window.addEventListener('resize', resizeAmbient);
+const particles = Array.from({length:22}, () => ({
+  x: Math.random()*window.innerWidth,
+  y: Math.random()*window.innerHeight,
+  r: 1 + Math.random()*2.2,
+  s: 0.15 + Math.random()*0.35,
+  drift: (Math.random()-0.5)*0.3,
+  a: 0.15 + Math.random()*0.25,
+  hue: Math.random() > 0.5 ? '225,154,60' : '207,98,116'
+}));
+function tickAmbient(){
+  actx.clearRect(0,0,ac.width,ac.height);
+  particles.forEach(p=>{
+    p.y -= p.s;
+    p.x += p.drift;
+    if (p.y < -10){ p.y = window.innerHeight + 10; p.x = Math.random()*window.innerWidth; }
+    actx.beginPath();
+    actx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    actx.fillStyle = `rgba(${p.hue},${p.a})`;
+    actx.fill();
+  });
+  requestAnimationFrame(tickAmbient);
+}
+tickAmbient();
+ 
+/* ================= THREAD PROGRESS ================= */
+const threadFill = document.getElementById('threadFill');
+const threadCharm = document.getElementById('threadCharm');
+function updateThread(){
+  const doc = document.documentElement;
+  const scrollTop = window.scrollY || doc.scrollTop;
+  const max = doc.scrollHeight - window.innerHeight;
+  const pct = max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0;
+  threadFill.style.height = pct + '%';
+  threadCharm.style.top = pct + '%';
+}
+window.addEventListener('scroll', updateThread, {passive:true});
+updateThread();
+ 
+/* ================= ROOM 0: DOOR ================= */
+const ringBtn = document.getElementById('ringBtn');
+const doorShape = document.getElementById('doorShape');
+const doorHint = document.getElementById('doorHint');
+const enterBtn = document.getElementById('enterBtn');
+let knocks = 0;
+ringBtn.addEventListener('click', () => {
+  knocks++;
+  ringBtn.style.transform = 'translate(-50%,-50%) scale(0.85)';
+  setTimeout(()=> ringBtn.style.transform = 'translate(-50%,-50%) scale(1)', 120);
+  if (knocks === 1) doorHint.textContent = 'Knock again...';
+  if (knocks === 2) doorHint.textContent = 'One more...';
+  if (knocks >= 3) {
+    doorHint.textContent = 'Welcome in.';
+    doorShape.classList.add('open');
+    ringBtn.style.animation = 'none';
+    setTimeout(()=> enterBtn.classList.add('show'), 700);
+  }
+});
+enterBtn.addEventListener('click', () => {
+  document.getElementById('band-room').scrollIntoView({behavior:'smooth'});
+});
+ 
+/* ================= ROOM 1: BAND ================= */
+const bandWrap = document.getElementById('bandWrap');
+const tieBtn = document.getElementById('tieBtn');
+const tiedMsg = document.getElementById('tiedMsg');
+tieBtn.addEventListener('click', () => {
+  bandWrap.classList.add('tied');
+  tieBtn.textContent = 'Tied ✓';
+  tieBtn.classList.add('done');
+  tiedMsg.classList.add('show');
+});
+ 
+/* ================= ROOM 2: LEDGER ================= */
+const ledgerData = [
+  { date:"Feb 14", label:"Valentine's Day", note:"I owed you flowers. Here's a museum instead." },
+  { date:"Your Birthday", label:"The big one", note:"No candles this year, but I built you a whole room downstairs." },
+  { date:"Our Anniversary", label:"One more year", note:"Still choosing you, gift or no gift." },
+  { date:"Random Tuesday", label:"No reason at all", note:"The best gifts never needed an occasion." },
+  { date:"Today", label:"Finally", note:"Consider every debt paid, in one museum." }
+];
+const ledgerTrack = document.getElementById('ledgerTrack');
+ledgerData.forEach(item => {
+  const card = document.createElement('div');
+  card.className = 'ledger-card';
+  card.innerHTML = `
+    <div class="ledger-inner">
+      <div class="ledger-face ledger-front">
+        <div class="lc-date">${item.date}</div>
+        <div class="lc-label">${item.label}</div>
+        <div class="lc-tap">tap to flip ↻</div>
+      </div>
+      <div class="ledger-face ledger-back"><p>${item.note}</p></div>
+    </div>`;
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+  ledgerTrack.appendChild(card);
+});
+ 
+/* ================= ROOM 3: SCRATCH GALLERY ================= */
+const cards = [
+  { title:'K + B', caption:'The day everything changed.', img:'https://github.com/snehil0608/love/blob/main/Image%201.jpeg' },
+  { title:'Always', caption:'Every silly call, every late night.', img:'https://github.com/snehil0608/love/blob/main/Image%202.jpeg' },
+  { title:'Home', caption:'Wherever you are, that is it for me.', img:'https://github.com/snehil0608/love/blob/main/Image%203.jpeg' }
+];
+const cardTrack = document.getElementById('cardTrack');
+const dotsWrap = document.getElementById('dots');
+const exhibitLabel = document.getElementById('exhibitLabel');
+let currentCard = 0;
+ 
+cards.forEach((c, i) => {
+  const card = document.createElement('div');
+  card.className = 'scratch-card' + (i===0 ? ' active':'');
+  card.dataset.index = i;
+  card.innerHTML = `
+    <div class="photo-art" style="background:#000;">
+      <img src="${c.img}" alt="${c.title}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">
+      <div style="position:relative; z-index:1; margin-top:auto; width:100%; padding:10px 12px; background:linear-gradient(0deg, rgba(0,0,0,0.55), transparent); text-align:center;">
+        <div style="font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:#fff;">${c.title}</div>
+        <div class="cap" style="color:#fff;">${c.caption}</div>
+      </div>
+    </div>
+    <canvas class="scratch-canvas"></canvas>`;
+  cardTrack.appendChild(card);
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i===0 ? ' active':'');
+  dotsWrap.appendChild(dot);
+});
+ 
+function setupScratch(card) {
+  const canvas = card.querySelector('canvas');
+  if (canvas.dataset.ready) return;
+  const rect = cardTrack.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  grad.addColorStop(0,'#c8992f');
+  grad.addColorStop(1,'#8f6f24');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = '600 14px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('rub to reveal', canvas.width/2, canvas.height/2);
+ 
+  let drawing = false;
+  function scratchAt(x,y){
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x,y,22,0,Math.PI*2);
+    ctx.fill();
+  }
+  function pos(e){
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - r.left, y: t.clientY - r.top };
+  }
+  function checkCleared(){
+    const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let cleared = 0, total = data.length/4;
+    for (let i=3; i<data.length; i+=4*20){ if (data[i]===0) cleared++; }
+    if (cleared / (total/20) > 0.45){
+      canvas.style.transition = 'opacity .5s ease';
+      canvas.style.opacity = '0';
+      canvas.style.pointerEvents = 'none';
+    }
+  }
+  function start(e){ drawing = true; const p = pos(e); scratchAt(p.x,p.y); }
+  function move(e){ if(!drawing) return; const p = pos(e); scratchAt(p.x,p.y); checkCleared(); e.preventDefault(); }
+  function end(){ drawing = false; }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:true});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+  canvas.dataset.ready = '1';
+}
+setupScratch(cardTrack.querySelector('.scratch-card.active'));
+ 
+function showCard(i){
+  currentCard = (i + cards.length) % cards.length;
+  [...cardTrack.children].forEach((c,idx)=> c.classList.toggle('active', idx===currentCard));
+  [...dotsWrap.children].forEach((d,idx)=> d.classList.toggle('active', idx===currentCard));
+  exhibitLabel.textContent = `Exhibit ${currentCard+1} · From the Kittu Collection`;
+  setupScratch(cardTrack.children[currentCard]);
+}
+document.getElementById('prevCard').addEventListener('click', ()=> showCard(currentCard-1));
+document.getElementById('nextCard').addEventListener('click', ()=> showCard(currentCard+1));
+ 
+/* ================= ROOM 4: PUZZLE ================= */
+const puzzleGrid = document.getElementById('puzzleGrid');
+const moveCount = document.getElementById('moveCount');
+const puzzleWin = document.getElementById('puzzleWin');
+ 
+const svgArt = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns='http://www.w3.org/2000/svg' width='270' height='270'>
+  <defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='%231f4a42'/>
+      <stop offset='55%' stop-color='%23e19a3c'/>
+      <stop offset='100%' stop-color='%23cf6274'/>
+    </linearGradient>
+  </defs>
+  <rect width='270' height='270' fill='url(%23g)'/>
+  <path d='M135 212 C 81 167, 50 135, 50 97 C 50 70, 70 50, 97 50 C 115 50, 130 60, 135 76 C 140 60, 155 50, 173 50 C 200 50, 220 70, 220 97 C 220 135, 189 167, 135 212 Z' fill='rgba(255,255,255,0.92)'/>
+  <text x='135' y='243' font-family='Georgia, serif' font-size='23' fill='white' text-anchor='middle'>Kittu + Buggu</text>
+</svg>
+`)}`;
+ 
+let order = [0,1,2,3,4,5,6,7,8];
+let selected = null;
+let moves = 0;
+let confettiFired = false;
+ 
+function shuffle(arr){
+  do {
+    for (let i = arr.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+  } while (arr.join(',') === '0,1,2,3,4,5,6,7,8');
+  return arr;
+}
+order = shuffle(order.slice());
+ 
+function renderPuzzle(){
+  puzzleGrid.innerHTML = '';
+  order.forEach((originalIndex, slot) => {
+    const row = Math.floor(originalIndex/3), col = originalIndex%3;
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.style.backgroundImage = `url("${svgArt}")`;
+    tile.style.backgroundPosition = `-${col*90}px -${row*90}px`;
+    tile.dataset.slot = slot;
+    tile.addEventListener('click', () => onTileClick(slot, tile));
+    puzzleGrid.appendChild(tile);
+  });
+}
+function onTileClick(slot, el){
+  if (puzzleWin.classList.contains('show')) return;
+  if (selected === null){
+    selected = slot;
+    el.classList.add('selected');
+  } else if (selected === slot){
+    el.classList.remove('selected');
+    selected = null;
+  } else {
+    [order[selected], order[slot]] = [order[slot], order[selected]];
+    moves++;
+    moveCount.textContent = `Moves: ${moves}`;
+    selected = null;
+    renderPuzzle();
+    if (order.join(',') === '0,1,2,3,4,5,6,7,8'){
+      puzzleWin.classList.add('show');
+      if (!confettiFired){
+        confettiFired = true;
+        const rect = puzzleGrid.getBoundingClientRect();
+        confettiBurst(rect.left + rect.width/2, rect.top + rect.height/2);
+      }
+    }
+  }
+}
+renderPuzzle();
+ 
+/* ================= ROOM 5: NIGHT SKY ================= */
+const skyField = document.getElementById('skyField');
+const skyProgress = document.getElementById('skyProgress');
+const reasons = [
+  "The way you laugh at your own jokes before you finish them.",
+  "You remember things I forgot I even said.",
+  "You make an ordinary Tuesday feel like plans.",
+  "You're the first person I want to tell anything to.",
+  "You forgive faster than I deserve.",
+  "You still get shy when I stare too long."
+];
+const starPositions = [
+  {x:18,y:20},{x:55,y:12},{x:82,y:32},{x:70,y:65},{x:35,y:72},{x:12,y:52}
+];
+for (let i=0;i<40;i++){
+  const sp = document.createElement('div');
+  sp.className = 'sparkle';
+  sp.style.left = Math.random()*100 + '%';
+  sp.style.top = Math.random()*100 + '%';
+  sp.style.opacity = (0.2 + Math.random()*0.6).toFixed(2);
+  skyField.appendChild(sp);
+}
+let opened = 0;
+reasons.forEach((text, i) => {
+  const pos = starPositions[i];
+  const star = document.createElement('div');
+  star.className = 'star-node';
+  star.style.left = pos.x + '%';
+  star.style.top = pos.y + '%';
+  star.textContent = '✦';
+  const pop = document.createElement('div');
+  pop.className = 'reason-pop';
+  pop.textContent = text;
+  star.appendChild(pop);
+  star.addEventListener('click', () => {
+    const isShown = pop.classList.contains('show');
+    document.querySelectorAll('.reason-pop.show').forEach(p => p.classList.remove('show'));
+    if (!isShown){
+      pop.classList.add('show');
+      if (!star.classList.contains('opened')){
+        star.classList.add('opened');
+        opened++;
+        skyProgress.textContent = `${opened} / 6 stars opened`;
+      }
+    }
+  });
+  skyField.appendChild(star);
+});
+ 
+/* ================= ROOM 6: THE VOWS ================= */
+const vowData = [
+  "Reply to my texts within one reasonable day",
+  "Show up when it matters, without being asked",
+  "Keep every secret, forever, no exceptions",
+  "Fight fair, and forgive faster",
+  "Choose each other, even on the hard days"
+];
+const vowList = document.getElementById('vowList');
+const vowProgress = document.getElementById('vowProgress');
+const signZone = document.getElementById('signZone');
+let vowsChecked = 0;
+ 
+vowData.forEach((text, i) => {
+  const item = document.createElement('div');
+  item.className = 'vow-item';
+  item.innerHTML = `<div class="vow-check">✓</div><span class="vt">${text}</span>`;
+  item.addEventListener('click', () => {
+    const wasChecked = item.classList.contains('checked');
+    item.classList.toggle('checked');
+    vowsChecked += wasChecked ? -1 : 1;
+    vowProgress.textContent = `${vowsChecked} / ${vowData.length} promises kept`;
+    updateSealAvailability();
+    if (vowsChecked === vowData.length) signZone.classList.add('active');
+    else signZone.classList.remove('active');
+  });
+  vowList.appendChild(item);
+});
+ 
+/* ---- signature pad ---- */
+const signPad = document.getElementById('signPad');
+const signCtx = signPad.getContext('2d');
+const signPlaceholder = document.getElementById('signPlaceholder');
+const sealBtn = document.getElementById('sealBtn');
+let hasSignature = false;
+let signing = false;
+ 
+function resizeSignPad(){
+  const rect = signPad.getBoundingClientRect();
+  signPad.width = rect.width * 2;
+  signPad.height = rect.height * 2;
+  signCtx.scale(2,2);
+  signCtx.strokeStyle = '#231f1a';
+  signCtx.lineWidth = 2.4;
+  signCtx.lineCap = 'round';
+  signCtx.lineJoin = 'round';
+}
+resizeSignPad();
+window.addEventListener('resize', resizeSignPad);
+ 
+function signPos(e){
+  const r = signPad.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - r.left, y: t.clientY - r.top };
+}
+function signStart(e){ signing = true; const p = signPos(e); signCtx.beginPath(); signCtx.moveTo(p.x,p.y); }
+function signMove(e){
+  if (!signing) return;
+  const p = signPos(e);
+  signCtx.lineTo(p.x,p.y);
+  signCtx.stroke();
+  if (!hasSignature){ hasSignature = true; signPlaceholder.style.display = 'none'; updateSealAvailability(); }
+  e.preventDefault();
+}
+function signEnd(){ signing = false; }
+signPad.addEventListener('mousedown', signStart);
+signPad.addEventListener('mousemove', signMove);
+window.addEventListener('mouseup', signEnd);
+signPad.addEventListener('touchstart', signStart, {passive:true});
+signPad.addEventListener('touchmove', signMove, {passive:false});
+signPad.addEventListener('touchend', signEnd);
+ 
+document.getElementById('signClear').addEventListener('click', () => {
+  signCtx.clearRect(0,0,signPad.width,signPad.height);
+  hasSignature = false;
+  signPlaceholder.style.display = 'flex';
+  updateSealAvailability();
+});
+ 
+function updateSealAvailability(){
+  sealBtn.disabled = !(vowsChecked === vowData.length && hasSignature);
+}
+ 
+/* ---- seal + kiss + certificate ---- */
+const kissBtn = document.getElementById('kissBtn');
+const certificate = document.getElementById('certificate');
+const certStamp = document.getElementById('certStamp');
+const certSigImg = document.getElementById('certSigImg');
+const certDate = document.getElementById('certDate');
+const certKiss = document.getElementById('certKiss');
+ 
+sealBtn.addEventListener('click', () => {
+  certSigImg.src = signPad.toDataURL('image/png');
+  const today = new Date();
+  certDate.textContent = 'Renewed on ' + today.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+  certificate.classList.add('show');
+  sealBtn.textContent = 'Sealed ✓';
+  sealBtn.disabled = true;
+  setTimeout(() => certStamp.classList.add('show'), 400);
+  kissBtn.classList.add('show');
+  const rect = certificate.getBoundingClientRect();
+  confettiBurst(rect.left + rect.width/2, rect.top + 40);
+  certificate.scrollIntoView({behavior:'smooth', block:'center'});
+});
+ 
+kissBtn.addEventListener('click', () => {
+  const rot = (Math.random()*30 - 15).toFixed(1);
+  certKiss.style.left = (30 + Math.random()*40) + '%';
+  certKiss.style.top = '78%';
+  certKiss.style.transform = `rotate(${rot}deg)`;
+  certKiss.classList.add('show');
+  kissBtn.disabled = true;
+  kissBtn.textContent = 'Sealed with a kiss 💋';
+});
+ 
+/* ================= ROOM 7: GIFT BOX ================= */
+const giftBox = document.getElementById('giftBox');
+const giftHint = document.getElementById('giftHint');
+const letter = document.getElementById('letter');
+let giftOpened = false;
+giftBox.addEventListener('click', () => {
+  if (giftOpened) return;
+  giftOpened = true;
+  giftBox.classList.add('open');
+  giftHint.textContent = 'Opened. This is the last one, I promise. (For now.)';
+  const rect = giftBox.getBoundingClientRect();
+  confettiBurst(rect.left + rect.width/2, rect.top);
+  setTimeout(() => letter.classList.add('show'), 500);
+});
+ 
+/* ================= CONFETTI ================= */
+function confettiBurst(x, y){
+  const colors = ['#cf6274','#e19a3c','#1f4a42','#c8992f','#e79aa6'];
+  for (let i=0; i<36; i++){
+    const el = document.createElement('div');
+    const size = 5 + Math.random()*5;
+    el.style.position = 'fixed';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.width = size + 'px';
+    el.style.height = size*0.6 + 'px';
+    el.style.background = colors[i % colors.length];
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    el.style.zIndex = 50;
+    el.style.pointerEvents = 'none';
+    document.body.appendChild(el);
+    const angle = Math.random()*Math.PI*2;
+    const dist = 60 + Math.random()*120;
+    const dx = Math.cos(angle)*dist;
+    const dy = Math.sin(angle)*dist - 40;
+    const rot = (Math.random()-0.5)*720;
+    const anim = el.animate([
+      { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+      { transform:`translate(${dx}px, ${dy + 220}px) rotate(${rot}deg)`, opacity:0 }
+    ], { duration: 1100 + Math.random()*500, easing:'cubic-bezier(.2,.6,.3,1)' });
+    anim.onfinish = () => el.remove();
+  }
+}
+</script>
+</body>
+</html>
+ 
+
+
